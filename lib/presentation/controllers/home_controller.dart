@@ -1,20 +1,19 @@
 // lib/presentation/controllers/home_controller.dart
 import 'package:flutter/material.dart';
-import '../../core/services/firestore_service.dart';
-import '../../data/models/contact_model.dart';
+import 'contact_controller.dart';
 
 class HomeController {
-  final FirestoreService _firestore = FirestoreService();
-  final searchController = TextEditingController();
+  final ContactController contactController;
+  final TextEditingController searchController = TextEditingController();
   String searchQuery = '';
 
-  Stream<List<Contact>> get contactsStream {
-    return searchQuery.isEmpty
-        ? _firestore.getContacts()
-        : _firestore.searchContacts(searchQuery);
+  HomeController({required this.contactController});
+
+  void updateSearch(String value) {
+    searchQuery = value.toLowerCase();
   }
 
-  void updateSearch(String query) {
-    searchQuery = query.trim();
+  void dispose() {
+    searchController.dispose();
   }
 }

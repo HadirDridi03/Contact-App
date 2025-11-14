@@ -12,25 +12,21 @@ class Contact {
     required this.phone,
   });
 
-  Map<String, dynamic> toMap() {
-    return {'name': name, 'email': email, 'phone': phone};
-  }
-
-  factory Contact.fromMap(String id, Map<String, dynamic> map) {
+  factory Contact.fromMap(Map<String, dynamic> map) {
     return Contact(
-      id: id,
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
     );
   }
 
-  Contact copyWith({String? name, String? email, String? phone}) {
-    return Contact(
-      id: id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-    );
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+    };
   }
 }
