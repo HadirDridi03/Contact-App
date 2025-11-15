@@ -3,13 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../controllers/auth_controller.dart';
 
-class RegisterView extends StatelessWidget {
+class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = AuthController();
+  State<RegisterView> createState() => _RegisterViewState();
+}
 
+class _RegisterViewState extends State<RegisterView> {
+  late final AuthController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AuthController();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Inscription")),
       body: Padding(
@@ -21,8 +38,10 @@ class RegisterView extends StatelessWidget {
               TextFormField(
                 controller: controller.emailController,
                 decoration: const InputDecoration(labelText: "Email"),
-                validator: (v) => v!.isEmpty ? "Requis" : null,
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) => v!.trim().isEmpty ? "Requis" : null,
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: controller.passwordController,
                 decoration: const InputDecoration(labelText: "Mot de passe"),
@@ -32,12 +51,17 @@ class RegisterView extends StatelessWidget {
               const SizedBox(height: 20),
               controller.isLoading
                   ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: () async {
-                        final success = await controller.register(context);
-                        if (success && context.mounted) context.go('/');
-                      },
-                      child: const Text("S'inscrire"),
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final success = await controller.register(context);
+                          if (success && context.mounted) {
+                            context.go('/');
+                          }
+                        },
+                        child: const Text("S'inscrire"),
+                      ),
                     ),
               TextButton(
                 onPressed: () => context.go('/login'),

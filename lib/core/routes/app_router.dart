@@ -1,55 +1,89 @@
 // lib/core/routes/app_router.dart
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+// Import des vues
 import '../../presentation/views/auth/login_view.dart';
 import '../../presentation/views/auth/register_view.dart';
 import '../../presentation/views/home/home_view.dart';
 import '../../presentation/views/home/add_contact_view.dart';
 import '../../presentation/views/home/edit_contact_view.dart';
-import '../../../data/models/contact_model.dart';
 
+// Import du modèle
+import '../../data/models/contact_model.dart';
+
+// ROUTEUR GLOBAL
 final GoRouter router = GoRouter(
   initialLocation: '/login',
   redirect: (context, state) {
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
-    final isAuthPage = state.uri.toString() == '/login' || state.uri.toString() == '/register';
+    final currentPath = state.uri.path;
 
-    if (!isLoggedIn && !isAuthPage) return '/login';
-    if (isLoggedIn && isAuthPage) return '/';
+    // Si pas connecté et pas sur login/register → redirige vers login
+    if (!isLoggedIn && currentPath != '/login' && currentPath != '/register') {
+      return '/login';
+    }
+
+    // Si connecté et sur login/register → redirige vers accueil
+    if (isLoggedIn && (currentPath == '/login' || currentPath == '/register')) {
+      return '/';
+    }
+
     return null;
   },
   routes: [
-    // CONNEXION
+    // PAGE DE CONNEXION
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginView(),
+      pageBuilder: (context, state) => _fadePage(state, const LoginView()),
     ),
 
-    // INSCRIPTION
+    // PAGE D'INSCRIPTION
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterView(),
+      pageBuilder: (context, state) => _fadePage(state, const RegisterView()),
     ),
 
-    // ACCUEIL
+    // PAGE D'ACCUEIL
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeView(),
+      pageBuilder: (context, state) => _fadePage(state, const HomeView()),
     ),
 
-    // AJOUTER CONTACT
+    // AJOUTER UN CONTACT
     GoRoute(
       path: '/add',
-      builder: (context, state) => const AddContactView(),
+      pageBuilder: (context, state) => _fadePage(state, const AddContactView()),
     ),
 
-    // MODIFIER CONTACT ← AJOUTÉ ICI
+    // MODIFIER UN CONTACT
     GoRoute(
-      path: '/edit/:id',
-      builder: (context, state) {
-        final contact = state.extra as Contact;
-        return EditContactView(contact: contact);
+      path: '/edit',
+      pageBuilder: (context, state) {
+        // Récupère le contact passé en extra
+        final contact = state.extra as Contact?;
+        if (contact == null) {
+          // Si aucun contact → retour à l'accueil
+          return _fadePage(state, const HomeView());
+        }
+        return _fadePage(state, EditContactView(contact: contact));
       },
     ),
   ],
 );
+
+// TRANSITION FLUIDE (FADE)
+CustomTransitionPage _fadePage(GoRouterState state, Widget child) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+        child: child,
+      );
+    },
+  );
+}

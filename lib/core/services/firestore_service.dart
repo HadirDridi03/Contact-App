@@ -7,11 +7,14 @@ class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final User? _user = FirebaseAuth.instance.currentUser;
 
-  CollectionReference get _contacts => _db.collection('users/${_user!.uid}/contacts');
+  CollectionReference<Map<String, dynamic>> get _contacts {
+    if (_user == null) throw Exception("Utilisateur non connecté");
+    return _db.collection('users').doc(_user!.uid).collection('contacts');
+  }
 
   Stream<List<Contact>> getContacts() {
     return _contacts.orderBy('name').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => Contact.fromMap(doc.id, doc.data() as Map<String, dynamic>)).toList();
+      return snapshot.docs.map((doc) => Contact.fromMap(doc.id, doc.data())).toList();
     });
   }
 
@@ -20,12 +23,14 @@ class FirestoreService {
   Future<void> deleteContact(String id) => _contacts.doc(id).delete();
 
   Stream<List<Contact>> searchContacts(String query) {
+    if (query.isEmpty) return getContacts();
+    final start = query;
+    final end = '$query\uf8ff';
     return _contacts
-        .where('name', isGreaterThanOrEqualTo: query)
-        .where('name', isLessThanOrEqualTo: '$query\uf8ff')
+        .where('name', isGreaterThanOrEqualTo: start)
+        .where('name', isLessThanOrEqualTo: end)
+        .orderBy('name')
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => Contact.fromMap(doc.id, doc.data() as Map<String, dynamic>)).toList();
-    });
+        .map((snapshot) => snapshot.docs.map((doc) => Contact.fromMap(doc.id, doc.data())).toList());
   }
 }

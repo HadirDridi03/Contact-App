@@ -5,15 +5,16 @@ import 'contact_controller.dart';
 class HomeController {
   final ContactController contactController;
   final TextEditingController searchController = TextEditingController();
-  String searchQuery = '';
+  final ValueNotifier<String> searchQuery = ValueNotifier<String>('');
 
-  HomeController({required this.contactController});
-
-  void updateSearch(String value) {
-    searchQuery = value.toLowerCase();
+  HomeController({required this.contactController}) {
+    searchController.addListener(() {
+      searchQuery.value = searchController.text.trim();
+    });
   }
 
   void dispose() {
     searchController.dispose();
+    searchQuery.dispose();
   }
 }
