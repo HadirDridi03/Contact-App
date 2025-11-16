@@ -20,38 +20,56 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFFFF5E1),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: const Color(0xFF8B4513),
           brightness: Brightness.light,
+          surface: const Color(0xFFFFF5E1),
         ),
         textTheme: GoogleFonts.poppinsTextTheme(),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF8B4513),
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF8B4513),
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
             elevation: 3,
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFFA0522D),
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.grey[50],
+          fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-          prefixIconColor: Colors.blue,
+          prefixIconColor: const Color(0xFF8B4513),
         ),
-        cardTheme: CardThemeData(
+        cardTheme: const CardThemeData(
+          color: Colors.white,
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         ),
       ),
       routerConfig: router,

@@ -64,7 +64,7 @@ final GoRouter router = GoRouter(
         // Récupère le contact passé en extra
         final contact = state.extra as Contact?;
         if (contact == null) {
-          // Si aucun contact → retour à l'accueil
+          // Si aucun contact retour à l'accueil
           return _fadePage(state, const HomeView());
         }
         return _fadePage(state, EditContactView(contact: contact));
