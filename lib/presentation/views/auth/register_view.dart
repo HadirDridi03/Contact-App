@@ -1,4 +1,3 @@
-// lib/presentation/views/auth/register_view.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../controllers/auth_controller.dart';
@@ -14,13 +13,13 @@ class _RegisterViewState extends State<RegisterView> {
   late final AuthController controller;
 
   @override
-  void initState() {
+  void initState() {//Initialise l'état du widget. Appelée une seule fois à la création.
     super.initState();
-    controller = AuthController();
+    controller = AuthController();//Initialise le contrôleur ici pour garantir qu'il n'est créé qu'une seule fois pendant toute la durée de vie de la page
   }
 
   @override
-  void dispose() {
+  void dispose() {//Libère les ressources utilisées par le contrôleur pour éviter les fuites de mémoire.
     controller.dispose();
     super.dispose();
   }

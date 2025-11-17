@@ -1,4 +1,3 @@
-// lib/presentation/views/home/edit_contact_view.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,16 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../data/models/contact_model.dart';
 
 class EditContactView extends StatefulWidget {
-  final Contact contact;
-  const EditContactView({super.key, required this.contact});
-
+  final Contact contact;//instance de la classe contact
+  const EditContactView({super.key, required this.contact});//Constructeur qui requiert obligatoirement le contact à modifier
   @override
   State<EditContactView> createState() => _EditContactViewState();
 }
 
 class _EditContactViewState extends State<EditContactView> {
   final _formKey = GlobalKey<FormState>();
-  late final _name = TextEditingController(text: widget.contact.name);
+  late final _name = TextEditingController(text: widget.contact.name);//Contrôleur pour le champ 'nom', pré-rempli avec le nom du contact existant
   late final _email = TextEditingController(text: widget.contact.email);
   late final _phone = TextEditingController(text: widget.contact.phone);
   bool _isLoading = false;

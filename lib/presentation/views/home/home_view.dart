@@ -1,10 +1,8 @@
-// lib/presentation/views/home/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/contact_controller.dart';
-import '../home/edit_contact_view.dart';
 import '../../../data/models/contact_model.dart';
 
 class HomeView extends StatefulWidget {
@@ -19,7 +17,7 @@ class _HomeViewState extends State<HomeView> {
   late final ContactController contactController;
 
   @override
-  void initState() {
+  void initState() {//avant de build home page on initialise le state contactController et homeController
     super.initState();
     contactController = ContactController();
     controller = HomeController(contactController: contactController);
@@ -41,12 +39,12 @@ class _HomeViewState extends State<HomeView> {
         content: Text("Voulez-vous supprimer ${contact.name} ?"),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(context, false),//on clique sur annuler et retourner false
             child: const Text("Annuler"),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(context, true),//on clique sur supprimer et retourner true
             child: const Text("Supprimer"),
           ),
         ],
@@ -55,7 +53,7 @@ class _HomeViewState extends State<HomeView> {
 
     if (confirm == true && mounted) {
       try {
-        await contactController.deleteContact(contact.id);
+        await contactController.deleteContact(contact.id);//appeler la methode delete du contact controller qui appele à son tour la methode delete du firestore_service
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -88,7 +86,7 @@ class _HomeViewState extends State<HomeView> {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.red),
             onPressed: () async {
-              await AuthController().logout(context);
+              await AuthController().logout(context);//en appuyant sur le bouton,on appele la fonction logout du authController
               if (context.mounted) {
                 context.go('/login');
               }
@@ -102,7 +100,7 @@ class _HomeViewState extends State<HomeView> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
-              controller: controller.searchController,
+              controller: controller.searchController,//Lie ce champ de texte au 'searchController' du HomeController
               decoration: InputDecoration(
                 hintText: "Rechercher un contact...",
                 prefixIcon: const Icon(Icons.search),
@@ -120,18 +118,18 @@ class _HomeViewState extends State<HomeView> {
           // LISTE DES CONTACTS
           Expanded(
             child: ValueListenableBuilder<String>(
-              valueListenable: controller.searchQuery,
-              builder: (context, query, _) {
+              valueListenable: controller.searchQuery,//ecoute ce qui est tappé dans la recherche
+              builder: (context, query, _) {//reconstruire cette liste à chaque fois query change
                 return StreamBuilder<List<Contact>>(
-                  stream: contactController.searchContacts(query),
-                  builder: (context, snapshot) {
+                  stream: contactController.searchContacts(query),//retourner en temps reel le contact cherché
+                  builder: (context, snapshot) {//snapshot=l'etat actuel 
                     // CHARGEMENT
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                    if (snapshot.connectionState == ConnectionState.waiting) {//si la connection à l'etat est en chargement
+                      return const Center(child: CircularProgressIndicator());//retourner l'animation du chargement au centre
                     }
 
                     // ERREUR
-                    if (snapshot.hasError) {
+                    if (snapshot.hasError) {//si l'etat a erreur
                       return Center(
                         child: Text(
                           "Erreur: ${snapshot.error}",
@@ -141,7 +139,7 @@ class _HomeViewState extends State<HomeView> {
                     }
 
                     // AUCUN CONTACT
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {//si l'etat ne contient pas des données
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

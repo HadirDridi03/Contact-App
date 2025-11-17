@@ -1,4 +1,3 @@
-// lib/core/routes/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +14,9 @@ import '../../data/models/contact_model.dart';
 
 // ROUTEUR GLOBAL
 final GoRouter router = GoRouter(
+   // Définit la route de démarrage de l'application
   initialLocation: '/login',
+   // Fonction de redirection, agit comme un garde avant chaque navigation
   redirect: (context, state) {
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
     final currentPath = state.uri.path;
@@ -60,8 +61,8 @@ final GoRouter router = GoRouter(
     // MODIFIER UN CONTACT
     GoRoute(
       path: '/edit',
-      pageBuilder: (context, state) {
-        // Récupère le contact passé en extra
+      pageBuilder: (context, state) {//Le pageBuilder reçoit un objet state de type GoRouterState. Cet objet contient toutes les informations sur la navigation en cours
+         // Tente de récupérer l'objet Contact passé dans le paramètre 'extra' de la navigation
         final contact = state.extra as Contact?;
         if (contact == null) {
           // Si aucun contact retour à l'accueil
@@ -73,11 +74,12 @@ final GoRouter router = GoRouter(
   ],
 );
 
-// TRANSITION FLUIDE (FADE)
+// Fonction d'aide privée pour créer une transition de page en fondu (fade)
 CustomTransitionPage _fadePage(GoRouterState state, Widget child) {
   return CustomTransitionPage(
     key: state.pageKey,
     child: child,
+    // Durée de l'animation
     transitionDuration: const Duration(milliseconds: 300),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(

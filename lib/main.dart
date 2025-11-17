@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'core/routes/app_router.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();//assurer que le moteur de firebase marche et initialisé
+  await Firebase.initializeApp();//connecter flutter à firebase
   runApp(const MyApp());
 }
 
