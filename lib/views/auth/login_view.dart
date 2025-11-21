@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';//importer le package qui fournit les widgets et les outils de base de l'interface utilisateur
 import 'package:go_router/go_router.dart';//importer le package qui gère la navigation entre les pages
-import '../../controllers/auth_controller.dart';
+import '../../controller/auth_controller.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});

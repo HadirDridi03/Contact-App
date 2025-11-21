@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../controllers/auth_controller.dart';
+import '../../controller/auth_controller.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
