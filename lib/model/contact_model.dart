@@ -1,10 +1,9 @@
-// lib/model/contact_model.dart
 class Contact {
   final String id;
   final String name;
   final String email;
   final String phone;
-  final String? photoPath;        // ← NOUVEAU : chemin local de la photo
+  final String? photoPath;        
 
   Contact({
     required this.id,
@@ -20,7 +19,7 @@ class Contact {
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
-      photoPath: map['photoPath'] as String?,   // ← lecture
+      photoPath: map['photoPath'] as String?,  
     );
   }
 
@@ -30,7 +29,7 @@ class Contact {
       'name': name,
       'email': email,
       'phone': phone,
-      'photoPath': photoPath,                 // ← sauvegarde
+      'photoPath': photoPath,                 
     };
   }
 }

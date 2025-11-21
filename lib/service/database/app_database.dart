@@ -21,7 +21,7 @@ class AppDatabase {
     // Dans la méthode _initDB()
 return await openDatabase(
   path,
-  version: 2, // ← Changé de 1 à 2
+  version: 2, 
   onCreate: (db, version) async {
     await db.execute('''
       CREATE TABLE users (
@@ -51,7 +51,7 @@ return await openDatabase(
 );
   }
 
-  // === AUTH ===
+  //AUTH 
   Future<int> createUser(String email, String password) async {
     final db = await database;
     return await db.insert('users', {'email': email, 'password': password});
@@ -73,7 +73,7 @@ return await openDatabase(
     return result.isNotEmpty ? result.first['id'] as int? : null;
   }
 
-  // === CONTACTS ===
+  //CONTACTS
   Future<List<Contact>> getAllContacts(int userId) async {
     final db = await database;
     final maps = await db.query(

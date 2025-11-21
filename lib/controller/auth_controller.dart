@@ -1,6 +1,5 @@
-// lib/controller/auth_controller.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';  // <-- AJOUTE CET IMPORT
+import 'package:go_router/go_router.dart'; 
 import '../service/auth_service.dart';
 
 class AuthController {
@@ -45,11 +44,11 @@ class AuthController {
     return success;
   }
 
-  // CORRIGÉ ICI
+
   Future<void> logout(BuildContext context) async {
     await AuthService.instance.logout();
 
-    // Bonne méthode avec GoRouter + MaterialApp.router
+    
     if (context.mounted) {
       GoRouter.of(context).go('/login');
     }

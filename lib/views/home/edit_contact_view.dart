@@ -1,8 +1,7 @@
-// lib/views/home/edit_contact_view.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';     // ← AJOUTÉ
+import 'package:image_picker/image_picker.dart';    
 import 'package:uuid/uuid.dart';
 
 import '../../controller/contact_controller.dart';
@@ -24,14 +23,14 @@ class _EditContactViewState extends State<EditContactView> {
 
   final contactController = ContactController();
 
-  String? _photoPath;           // nouvelle photo choisie
+  String? _photoPath;          
   bool _isLoading = false;
 
-  // Sélectionner une photo depuis la galerie
+  // Sélection d'une photo depuis la galerie
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,   // ← C’était ça le bug !
+      source: ImageSource.gallery,   
       imageQuality: 85,
     );
 
@@ -50,7 +49,7 @@ class _EditContactViewState extends State<EditContactView> {
     super.dispose();
   }
 
-  // Validation (même que dans add_contact_view)
+  // Validation 
   String? _validateName(String? v) =>
       v == null || v.trim().trim().isEmpty ? 'Nom requis' : v.trim().length < 2 ? 'Min 2 caractères' : null;
 
@@ -75,7 +74,7 @@ class _EditContactViewState extends State<EditContactView> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
-        photoPath: _photoPath ?? widget.contact.photoPath, // garde l’ancienne si pas changée
+        photoPath: _photoPath ?? widget.contact.photoPath, 
       );
 
       await contactController.saveContact(updatedContact);

@@ -1,4 +1,3 @@
-// lib/views/home/add_contact_view.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -45,7 +44,7 @@ class _AddContactViewState extends State<AddContactView> {
     super.dispose();
   }
 
-  // Validation (inchangée)
+  // Validation
   String? _validateName(String? v) => v == null || v.trim().isEmpty ? 'Nom requis' : v.trim().length < 2 ? 'Min 2 caractères' : null;
   String? _validateEmail(String? v) => v == null || v.trim().isEmpty ? 'Email requis' : RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v.trim()) ? null : 'Email invalide';
   String? _validatePhone(String? v) {
@@ -54,7 +53,7 @@ class _AddContactViewState extends State<AddContactView> {
     return RegExp(r'^(?:\+216|216)?[2579]\d{7}$').hasMatch(clean) ? null : 'Format: +216 XX XXX XXX';
   }
 
-  // SAUVEGARDE → utilise updateContact() qui existe déjà !
+  // SAUVEGARDE 
   Future<void> _saveContact() async {
   if (!_formKey.currentState!.validate()) return;
 
@@ -69,7 +68,7 @@ class _AddContactViewState extends State<AddContactView> {
       photoPath: _photoPath,
     );
 
-    await contactController.saveContact(newContact);  // ← LIGNE MAGIQUE
+    await contactController.saveContact(newContact);  
 
     if (!mounted) return;
 

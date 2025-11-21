@@ -73,7 +73,7 @@ final GoRouter router = GoRouter(
     ),
   ],
 
-  // Optionnel : page d'erreur personnalisée
+  // page d'erreur personnalisée
   errorBuilder: (context, state) => Scaffold(
     body: Center(
       child: Text(

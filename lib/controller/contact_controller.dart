@@ -1,4 +1,3 @@
-// lib/controller/contact_controller.dart
 import 'package:uuid/uuid.dart';
 import '../../model/contact_model.dart';
 import '../../service/database/app_database.dart';
@@ -6,7 +5,7 @@ import '../../service/database/app_database.dart';
 class ContactController {
   final _db = AppDatabase.instance;
 
-  // Méthode magique : ajoute OU modifie selon si le contact existe déjà
+  //ajoute OU modifie selon si le contact existe déjà
   Future<void> saveContact(Contact contact) async {
     final userId = await _db.getLoggedInUserId();
     if (userId == null) return;
