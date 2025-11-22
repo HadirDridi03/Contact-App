@@ -12,12 +12,9 @@ class ContactController {
 
     final exists = await _db.contactExists(contact.id, userId);
     if (exists) {
-      await _db.updateContact(contact, userId);
-    } else {
-      await _db.insertContact(contact, userId);
-    }
+     await AppDatabase.instance.saveContact(contact, userId);
   }
-
+  }
   Future<void> deleteContact(String id) async {
     final userId = await _db.getLoggedInUserId();
     if (userId == null) return;

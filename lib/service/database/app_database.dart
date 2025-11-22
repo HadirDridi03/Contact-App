@@ -1,11 +1,13 @@
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 import '../../model/contact_model.dart';
 
 class AppDatabase {
   static final AppDatabase instance = AppDatabase._();
   static Database? _database;
+  final _uuid = const Uuid();
 
   AppDatabase._();
 
@@ -18,40 +20,39 @@ class AppDatabase {
     final dir = await getApplicationDocumentsDirectory();
     final path = join(dir.path, 'contacts_app.db');
 
-    // Dans la méthode _initDB()
-return await openDatabase(
-  path,
-  version: 2, 
-  onCreate: (db, version) async {
-    await db.execute('''
-      CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-      )
-    ''');
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: (db, version) async {
+        await db.execute('''
+          CREATE TABLE users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
+          )
+        ''');
 
-    await db.execute('''
-      CREATE TABLE contacts (
-        id TEXT PRIMARY KEY,
-        userId INTEGER NOT NULL,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        photoPath TEXT,                     -- NOUVELLE COLONNE
-        FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
-      )
-    ''');
-  },
-  onUpgrade: (db, oldVersion, newVersion) async {
-    if (oldVersion < 2) {
-      await db.execute('ALTER TABLE contacts ADD COLUMN photoPath TEXT');
-    }
-  },
-);
+        await db.execute('''
+          CREATE TABLE contacts (
+            id TEXT PRIMARY KEY,
+            userId INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            photoPath TEXT,
+            FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
+          )
+        ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE contacts ADD COLUMN photoPath TEXT');
+        }
+      },
+    );
   }
 
-  //AUTH 
+  //AUTH
   Future<int> createUser(String email, String password) async {
     final db = await database;
     return await db.insert('users', {'email': email, 'password': password});
@@ -73,7 +74,7 @@ return await openDatabase(
     return result.isNotEmpty ? result.first['id'] as int? : null;
   }
 
-  //CONTACTS
+  // CONTACTS
   Future<List<Contact>> getAllContacts(int userId) async {
     final db = await database;
     final maps = await db.query(
@@ -96,22 +97,20 @@ return await openDatabase(
     return maps.map((m) => Contact.fromMap(m['id'] as String, m)).toList();
   }
 
-  Future<void> insertContact(Contact contact, int userId) async {
+  Future<void> saveContact(Contact contact, int userId) async {
     final db = await database;
-    await db.insert('contacts', {
-      ...contact.toMap(),
-      'userId': userId,
-    });
-  }
+    final exists = contact.id.isNotEmpty && await contactExists(contact.id, userId);
 
-  Future<void> updateContact(Contact contact, int userId) async {
-    final db = await database;
-    await db.update(
-      'contacts',
-      contact.toMap(),
-      where: 'id = ? AND userId = ?',
-      whereArgs: [contact.id, userId],
-    );
+    if (exists) {
+      await db.update('contacts', contact.toMap(),
+          where: 'id = ? AND userId = ?', whereArgs: [contact.id, userId]);
+    } else {
+      final newContact = contact.copyWith(id: _uuid.v4());
+      await db.insert('contacts', {
+        ...newContact.toMap(),
+        'userId': userId,
+      });
+    }
   }
 
   Future<void> deleteContact(String id, int userId) async {
@@ -119,12 +118,14 @@ return await openDatabase(
     await db.delete('contacts', where: 'id = ? AND userId = ?', whereArgs: [id, userId]);
   }
 
-Future<bool> contactExists(String contactId, int userId) async {
-  final db = await database;
-  final result = await db.query(
-    'contacts',
-    where: 'id = ? AND userId = ?',
-    whereArgs: [contactId, userId],
-  );
-  return result.isNotEmpty;
-}}
+  Future<bool> contactExists(String contactId, int userId) async {
+    if (contactId.isEmpty) return false;
+    final db = await database;
+    final result = await db.query(
+      'contacts',
+      where: 'id = ? AND userId = ?',
+      whereArgs: [contactId, userId],
+    );
+    return result.isNotEmpty;
+  }
+}

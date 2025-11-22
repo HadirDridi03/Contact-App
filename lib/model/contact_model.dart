@@ -1,9 +1,11 @@
+import 'package:uuid/uuid.dart';
+
 class Contact {
   final String id;
   final String name;
   final String email;
   final String phone;
-  final String? photoPath;        
+  final String? photoPath;  // nullable pour la photo
 
   Contact({
     required this.id,
@@ -13,13 +15,20 @@ class Contact {
     this.photoPath,
   });
 
-  factory Contact.fromMap(String id, Map<String, dynamic> map) {
+  // INDISPENSABLE pour saveContact()
+  Contact copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? photoPath,
+  }) {
     return Contact(
-      id: id,
-      name: map['name'] ?? '',
-      email: map['email'] ?? '',
-      phone: map['phone'] ?? '',
-      photoPath: map['photoPath'] as String?,  
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      photoPath: photoPath ?? this.photoPath,
     );
   }
 
@@ -29,7 +38,17 @@ class Contact {
       'name': name,
       'email': email,
       'phone': phone,
-      'photoPath': photoPath,                 
+      'photoPath': photoPath,
     };
+  }
+
+  static Contact fromMap(String id, Map<String, dynamic> map) {
+    return Contact(
+      id: id,
+      name: map['name'] as String,
+      email: map['email'] as String,
+      phone: map['phone'] as String,
+      photoPath: map['photoPath'] as String?,
+    );
   }
 }
