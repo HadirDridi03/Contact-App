@@ -12,7 +12,7 @@ class AuthController {
     if (!formKey.currentState!.validate()) return false;
 
     isLoading = true;
-    final success = await AuthService.instance.login(
+    final success = await LocalAuthService.instance.login(
       emailController.text.trim(),
       passwordController.text,
     );
@@ -30,7 +30,7 @@ class AuthController {
     if (!formKey.currentState!.validate()) return false;
 
     isLoading = true;
-    final success = await AuthService.instance.register(
+    final success = await LocalAuthService.instance.register(
       emailController.text.trim(),
       passwordController.text,
     );
@@ -46,7 +46,7 @@ class AuthController {
 
 
   Future<void> logout(BuildContext context) async {
-    await AuthService.instance.logout();
+    await LocalAuthService.instance.logout();
 
     
     if (context.mounted) {

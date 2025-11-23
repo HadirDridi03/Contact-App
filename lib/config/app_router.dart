@@ -20,7 +20,7 @@ final GoRouter router = GoRouter(
 
   /// Redirection intelligente selon l'état de connexion
   redirect: (context, state) async {
-    final bool isLoggedIn = await AuthService.instance.isLoggedIn();
+    final bool isLoggedIn = await LocalAuthService.instance.isLoggedIn();
     final String location = state.uri.path;
 
     // Pas connecté → on force /login

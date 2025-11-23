@@ -2,14 +2,17 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../model/contact_model.dart';
 
 class AppDatabase {
-  static final AppDatabase instance = AppDatabase._();
-  static Database? _database;
-  final _uuid = const Uuid();
+  // Singleton
+  static final AppDatabase instance = AppDatabase._internal();
+  factory AppDatabase() => instance;
+  AppDatabase._internal();
 
-  AppDatabase._();
+  static Database? _database;
+  final _uuid = Uuid();
 
   Future<Database> get database async {
     _database ??= await _initDB();
@@ -17,8 +20,8 @@ class AppDatabase {
   }
 
   Future<Database> _initDB() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final path = join(dir.path, 'contacts_app.db');
+    final directory = await getApplicationDocumentsDirectory();
+    final path = join(directory.path, 'contacts_app.db');
 
     return await openDatabase(
       path,
@@ -52,10 +55,17 @@ class AppDatabase {
     );
   }
 
-  //AUTH
+  // ────────────────────────────────────────
+  // AUTH
+  // ────────────────────────────────────────
+
   Future<int> createUser(String email, String password) async {
     final db = await database;
-    return await db.insert('users', {'email': email, 'password': password});
+    return await db.insert(
+      'users',
+      {'email': email, 'password': password},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<Map<String, dynamic>?> getUser(String email, String password) async {
@@ -68,13 +78,34 @@ class AppDatabase {
     return result.isNotEmpty ? result.first : null;
   }
 
-  Future<int?> getLoggedInUserId() async {
+  // ────────────────────────────────────────
+  // CONTACTS
+  // ────────────────────────────────────────
+
+  Future<void> saveContact(Contact contact, int userId) async {
     final db = await database;
-    final result = await db.rawQuery('SELECT id FROM users LIMIT 1');
-    return result.isNotEmpty ? result.first['id'] as int? : null;
+
+    final map = contact.toMap();
+    map['userId'] = userId; 
+
+    final existing = await db.query(
+      'contacts',
+      where: 'id = ?',
+      whereArgs: [contact.id],
+    );
+
+    if (existing.isNotEmpty) {
+      await db.update(
+        'contacts',
+        map,
+        where: 'id = ?',
+        whereArgs: [contact.id],
+      );
+    } else {
+      await db.insert('contacts', map);
+    }
   }
 
-  // CONTACTS
   Future<List<Contact>> getAllContacts(int userId) async {
     final db = await database;
     final maps = await db.query(
@@ -83,7 +114,7 @@ class AppDatabase {
       whereArgs: [userId],
       orderBy: 'name ASC',
     );
-    return maps.map((m) => Contact.fromMap(m['id'] as String, m)).toList();
+    return maps.map(Contact.fromMap).toList();
   }
 
   Future<List<Contact>> searchContacts(int userId, String query) async {
@@ -94,28 +125,17 @@ class AppDatabase {
       whereArgs: [userId, '%$query%'],
       orderBy: 'name ASC',
     );
-    return maps.map((m) => Contact.fromMap(m['id'] as String, m)).toList();
+    return maps.map(Contact.fromMap).toList();
   }
 
-  Future<void> saveContact(Contact contact, int userId) async {
+  // AJOUTÉES ICI : LES MÉTHODES MANQUANTES
+  Future<void> deleteContact(String contactId, int userId) async {
     final db = await database;
-    final exists = contact.id.isNotEmpty && await contactExists(contact.id, userId);
-
-    if (exists) {
-      await db.update('contacts', contact.toMap(),
-          where: 'id = ? AND userId = ?', whereArgs: [contact.id, userId]);
-    } else {
-      final newContact = contact.copyWith(id: _uuid.v4());
-      await db.insert('contacts', {
-        ...newContact.toMap(),
-        'userId': userId,
-      });
-    }
-  }
-
-  Future<void> deleteContact(String id, int userId) async {
-    final db = await database;
-    await db.delete('contacts', where: 'id = ? AND userId = ?', whereArgs: [id, userId]);
+    await db.delete(
+      'contacts',
+      where: 'id = ? AND userId = ?',
+      whereArgs: [contactId, userId],
+    );
   }
 
   Future<bool> contactExists(String contactId, int userId) async {
@@ -123,6 +143,7 @@ class AppDatabase {
     final db = await database;
     final result = await db.query(
       'contacts',
+      columns: ['id'],
       where: 'id = ? AND userId = ?',
       whereArgs: [contactId, userId],
     );
